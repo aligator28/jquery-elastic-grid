@@ -19,6 +19,16 @@
 <script src="js/classie.js"></script>
 <script type="text/javascript" src="js/elastic_grid.min.js"></script>
 <script type="text/javascript">
+function fillTitle(title, desc, linkText = '', url = 'javascript:;') {
+    var container = $('#big_images_cont');
+
+    container.find('#title').html(title).attr('href', url);
+    container.find('#desc').html(desc);
+    container.find('#link').html(linkText).attr('href', url);
+    
+    return container.html();
+}
+
     $(function(){
         $("#elastic_grid_demo").elastic_grid({
             'showAllText' : 'All',
@@ -28,7 +38,23 @@
                     'title'         : 'Title #1',
                     'description'   : ' Description text here',
                     'thumbnail'     : ['images/small/1.jpg', 'images/small/2.jpg'],
-                    'large'         : ['images/large/1.jpg', 'images/large/2.jpg'],
+                    'large'         : [
+                        {
+                            'number' : 1,
+                            'url'    : 'img/p/taxipress.png', 
+                            'title'  : fillTitle( 'Taxipress', 'HTML/CSS/JS coding, Wordpress integration', 'Watch cool presentation',  'http://webdev.ho.ua/wordpress/' )
+                        },
+                        { 
+                            'number' : 2,
+                            'url'    : 'img/p/grape.jpg', 
+                            'title'  : fillTitle( 'Gergel Grape', 'Design, coding, Wordpress, Woocommerce', 'In development' ) 
+                        },
+                        { 
+                            'number' : 3,
+                            'url'    : 'img/p/wordpress_code.png', 
+                            'title'  : fillTitle( 'Wordpress code example', 'Click the image' ) 
+                        }
+                    ],
                     'button_list'   :
                     [
                         { 'title':'Demo', 'url' : 'http://bonchen.net/' },
