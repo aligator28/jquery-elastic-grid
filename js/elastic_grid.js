@@ -173,6 +173,9 @@ $(function() {
     };
     $.fn.elastic_grid = function(config){
         config = $.extend({}, {
+            // PLUTA CUSTOMIZATION
+            perRow: null,
+            // PLUTA CUSTOMIZATION
             items: null,
             filterEffect: '',
             hoverDirection: true,
@@ -220,7 +223,8 @@ $(function() {
                 //initial default photo
                 imgObject = $('<img/>');
                 imgObject.attr('src', item.thumbnail[0]);
-                imgObject.attr('data-largesrc', item.large[0]);
+                
+                imgObject.attr('data-largesrc', item.large[0].url);
 
 
                 //initial hover direction
@@ -232,6 +236,13 @@ $(function() {
                 imgObject.appendTo(aObject);
                 figureObject.appendTo(aObject);
                 aObject.appendTo(liObject);
+
+                // PLUTA CUSTOMIZATION
+                if (config.perRow !== null && itemIdx % config.perRow === 0 ) { 
+                    ulObject.append( $('<br>') );
+                } 
+                // PLUTA CUSTOMIZATION ENDS
+
                 liObject.appendTo(ulObject);
             }
         }
@@ -268,12 +279,11 @@ $(function() {
 
         // Adding a data-id attribute. Required by the Quicksand plugin:
         elem.attr('data-id',i);
-
         elem.addClass('all');
+
         $.each(tags,function(key,value){
             // Removing extra whitespace:
             value = $.trim(value);
-
             //add class tags to li
             elem.addClass(value.toLowerCase().replace(' ','-'));
 
@@ -541,7 +551,8 @@ $(function() {
                 this.$detailButtonList = $( '<span class="buttons-list"></span>' );
                 this.$details = $( '<div class="og-details"></div>' ).append( this.$title, this.$description, this.$detailButtonList );
                 this.$loading = $( '<div class="og-loading"></div>' );
-                this.$fullimage = $( '<div class="og-fullimg"></div>' ).append( this.$loading );
+                this.$fullimageTitle = $( '<h2 class="og-fullimg-title"></h2>' );
+                this.$fullimage = $( '<div class="og-fullimg"></div>' ).append( this.$loading ).prepend( this.$fullimageTitle );
                 this.$closePreview = $( '<span class="og-close"></span>' );
                 this.$previewInner = $( '<div class="og-expander-inner"></div>' ).append( this.$closePreview, this.$fullimage, this.$details );
                 this.$previewEl = $( '<div class="og-expander"></div>' ).append( this.$previewInner );
@@ -583,6 +594,7 @@ $(function() {
                     this.$description.html( eldata.description );
                     //clear current button list
                     this.$detailButtonList.html("");
+
                     urlList = eldata.button_list;
 
                     if(urlList.length > 0)
@@ -623,9 +635,12 @@ $(function() {
                             ObjImg.addClass('related_photo');
                             if(i==0){
                                 ObjImg.addClass('selected');
+                                ObjImg.attr("src", glarge[i].url);
+                            } else {
+                                ObjImg.attr("src", gthumbs[i]);
                             }
-                            ObjImg.attr("src", gthumbs[i]);
-                            ObjImg.attr("data-large", glarge[i]);
+                            ObjImg.attr("data-large", glarge[i].url);
+                            ObjImg.attr("data-number", glarge[i].number);
                             ObjA.append(ObjImg);
                             Objli.append(ObjA);
                             ObjUl.append(Objli);
@@ -638,6 +653,12 @@ $(function() {
                             carousel.find('.selected').removeClass('selected');
                             $(this).addClass('selected');
                             $largePhoto = $(this).data('large');
+
+                            // PLUTA
+                            // here i add a title for big image 
+                            // remove prev Title for big image block
+                            self.$fullimageTitle.empty();
+                            self.$fullimageTitle.append( eldata.large[( $(this).data('number') - 1 )].title );
 
                             $('<img/>').load(function(){
                                 self.$fullimage.find('img').fadeOut(500, function(){
@@ -658,13 +679,20 @@ $(function() {
                         this.$loading.show();
                         $( '<img/>' ).load( function() {
                             var $img = $( this );
+                            
                             if( $img.attr( 'src' ) === self.$item.children('a').find('img').data( 'largesrc' ) ) {
                                 self.$loading.hide();
                                 self.$fullimage.find( 'img' ).remove();
                                 self.$largeImg = $img.fadeIn( 350 );
                                 self.$fullimage.append( self.$largeImg );
+
+                                // PLUTA ADD TITLES for initial loading
+                                self.$fullimageTitle.empty();
+                                self.$fullimageTitle.append( eldata.large[0].title );
+
                             }
-                        } ).attr( 'src', eldata.large[0] );
+                        } ).attr( 'src', eldata.large[0].url );
+
                     }
 
                 }
